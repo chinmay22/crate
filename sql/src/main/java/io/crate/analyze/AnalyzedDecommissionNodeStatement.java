@@ -20,45 +20,34 @@
  * agreement.
  */
 
-package io.crate.sql.tree;
+package io.crate.analyze;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
+public final class AnalyzedDecommissionNodeStatement implements AnalyzedStatement {
 
-public class DecommissionNode extends Statement {
+    private final String nodeId;
 
-    private final Expression nodeIdOrName;
-
-    public DecommissionNode(Expression nodeIdOrName) {
-        this.nodeIdOrName = nodeIdOrName;
+    AnalyzedDecommissionNodeStatement(String nodeId) {
+        this.nodeId = nodeId;
     }
 
-    public Expression nodeIdOrName() {
-        return nodeIdOrName;
+    public String nodeId() {
+        return nodeId;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(nodeIdOrName);
+    public <C, R> R accept(AnalyzedStatementVisitor<C, R> visitor, C context) {
+        return visitor.visitDecommissionNode(this, context);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-
-        DecommissionNode that = (DecommissionNode) obj;
-        return nodeIdOrName.equals(that.nodeIdOrName);
+    public boolean isWriteOperation() {
+        return true;
     }
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
-            .add("nodeIdOrName", nodeIdOrName).toString();
-    }
-
-    @Override
-    public <R, C> R accept(AstVisitor<R, C> visitor, C context) {
-        return visitor.visitAlterClusterDecommissionNode(this, context);
+        return "AnalyzedDecommissionNodeStatement{" +
+               "nodeId=" + nodeId +
+               '}';
     }
 }

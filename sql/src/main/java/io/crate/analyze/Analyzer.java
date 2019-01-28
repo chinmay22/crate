@@ -56,6 +56,7 @@ import io.crate.sql.tree.CreateTable;
 import io.crate.sql.tree.CreateUser;
 import io.crate.sql.tree.CreateView;
 import io.crate.sql.tree.DeallocateStatement;
+import io.crate.sql.tree.DecommissionNodeStatement;
 import io.crate.sql.tree.Delete;
 import io.crate.sql.tree.DenyPrivilege;
 import io.crate.sql.tree.DropAnalyzer;
@@ -529,6 +530,11 @@ public class Analyzer {
         @Override
         public AnalyzedStatement visitGCDanglingArtifacts(GCDanglingArtifacts gcDanglingArtifacts, Analysis context) {
             return AnalyzedGCDanglingArtifacts.INSTANCE;
+        }
+
+        @Override
+        public AnalyzedStatement visitAlterClusterDecommissionNode(DecommissionNodeStatement decommissionNodeStatement, Analysis context) {
+            return DecommissionNodeAnalyzer.analyze(decommissionNodeStatement, context.parameterContext());
         }
 
         @Override
