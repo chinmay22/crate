@@ -30,6 +30,7 @@ import io.crate.data.RowConsumer;
 import io.crate.execution.support.OneRowActionListener;
 import io.crate.planner.operators.SubQueryResults;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.cluster.node.DiscoveryNode;
 
 public final class DecommissionNodePlan implements Plan {
 
@@ -54,8 +55,11 @@ public final class DecommissionNodePlan implements Plan {
         OneRowActionListener<AcknowledgedResponse> listener =
             new OneRowActionListener<>(consumer, r -> r.isAcknowledged() ? new Row1(1L) : new Row1(0L));
 
+        DiscoveryNode targetNode =
+            dependencies.clusterService().state().nodes().resolveNode(analyzedDecommissionNodeStatement.nodeIdOrName());
+
         dependencies.transportActionProvider().transportDecommissionNodeAction().execute(
-            analyzedDecommissionNodeStatement.nodeId(),
+            targetNode.getId(),
             DecommissionNodeRequest.INSTANCE,
             listener
         );

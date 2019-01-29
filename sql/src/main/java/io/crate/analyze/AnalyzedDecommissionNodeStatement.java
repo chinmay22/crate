@@ -24,14 +24,14 @@ package io.crate.analyze;
 
 public final class AnalyzedDecommissionNodeStatement implements AnalyzedStatement {
 
-    private final String nodeId;
+    private final String nodeIdOrName;
 
-    AnalyzedDecommissionNodeStatement(String nodeId) {
-        this.nodeId = nodeId;
+    AnalyzedDecommissionNodeStatement(String nodeIdOrName) {
+        this.nodeIdOrName = nodeIdOrName;
     }
 
-    public String nodeId() {
-        return nodeId;
+    public String nodeIdOrName() {
+        return nodeIdOrName;
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class AnalyzedDecommissionNodeStatement implements AnalyzedStatemen
     @Override
     public String toString() {
         return "AnalyzedDecommissionNodeStatement{" +
-               "nodeId=" + nodeId +
+               "nodeIdOrName=" + nodeIdOrName +
                '}';
     }
 }

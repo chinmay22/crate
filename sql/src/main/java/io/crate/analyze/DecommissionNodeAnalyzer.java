@@ -32,13 +32,13 @@ public class DecommissionNodeAnalyzer {
 
     public static AnalyzedDecommissionNodeStatement analyze(DecommissionNodeStatement decommissionNodeStatement,
                                                             ParameterContext parameterContext) {
-        String nodeId;
+        String nodeIdOrName;
         try {
-            nodeId = ExpressionToStringVisitor.convert(decommissionNodeStatement.nodeIdOrName(),
+            nodeIdOrName = ExpressionToStringVisitor.convert(decommissionNodeStatement.nodeIdOrName(),
                 parameterContext.parameters());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Can not parse Node Id", e);
+            throw new IllegalArgumentException("Can not parse node id or name", e);
         }
-        return new AnalyzedDecommissionNodeStatement(nodeId);
+        return new AnalyzedDecommissionNodeStatement(nodeIdOrName);
     }
 }
