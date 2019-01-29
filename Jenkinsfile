@@ -62,6 +62,28 @@ pipeline {
             }
           }
         }
+        stage('test jdk12') {
+          agent { label 'large' }
+          environment {
+            CODECOV_TOKEN = credentials('cratedb-codecov-token')
+          }
+          tools {
+            jdk 'jdk12'
+          }
+          steps {
+            sh 'git clean -xdff'
+            checkout scm
+            sh 'git submodule update --init'
+            unstash 'crate'
+            sh './gradlew --no-daemon --parallel -PtestForks=8 test jacocoReport'
+            sh 'curl -s https://codecov.io/bash | bash'
+          }
+          post {
+            always {
+              junit '*/build/test-results/test/*.xml'
+            }
+          }
+        }
         stage('itest jdk8') {
           agent { label 'large' }
           tools {
