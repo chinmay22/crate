@@ -66,8 +66,16 @@ public class Version implements Comparable<Version>, ToXContentFragment {
      * Before CrateDB 4.0 we've had ES versions (internalId) and CrateDB (externalId) versions.
      * The internalId is stored in indices, so we keep using it for compatibility.
      *
-     * All internalIds are mapped to the first CrateDB version which shipped with the given ES version.
-     * Starting from internalId 7.0.0, we've a static offset as we are always increasing both versions in sync.
+     * Starting with CrateDB 4.0 we only have a single version, but keep maintaining an internalId for compatibility.
+     * This is a static-offset that maps CrateDB (externalId) to internalId.
+     *
+     * E.g.
+     *
+     * CrateDB 4.0.0 -> 7.0.0
+     *         4.0.1 -> 7.0.1
+     *         4.1.3 -> 7.1.3
+     *         5.0.3 -> 8.0.3
+     *         ...
      */
     private static final int INTERNAL_OFFSET = 3_00_00_00;
 
