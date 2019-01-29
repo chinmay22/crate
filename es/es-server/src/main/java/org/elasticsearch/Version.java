@@ -117,8 +117,7 @@ public class Version implements Comparable<Version>, ToXContentFragment {
             case V_EMPTY_ID:
                 return V_EMPTY;
             default:
-                // TODO: This is not correct for versions < 7.0.0; should we fail in such a case?
-                return new Version(internalId, internalId - INTERNAL_OFFSET, org.apache.lucene.util.Version.LATEST);
+                throw new IllegalStateException("Illegal internal version id: " + internalId);
         }
     }
 
@@ -264,15 +263,6 @@ public class Version implements Comparable<Version>, ToXContentFragment {
         return builder.value(toString());
     }
 
-    /*
-     * We need the declared versions when computing the minimum compatibility version. As computing the declared versions uses reflection it
-     * is not cheap. Since computing the minimum compatibility version can occur often, we use this holder to compute the declared versions
-     * lazily once.
-     */
-    private static class DeclaredVersionsHolder {
-        static final List<Version> DECLARED_VERSIONS = Collections.unmodifiableList(getDeclaredVersions(Version.class));
-    }
-
     /**
      * Returns the minimum compatible version based on the current
      * version. Ie a node needs to have at least the return version in order
@@ -281,23 +271,7 @@ public class Version implements Comparable<Version>, ToXContentFragment {
      * is a beta or RC release then the version itself is returned.
      */
     public Version minimumCompatibilityVersion() {
-        if (major >= 6) {
-            // all major versions from 6 onwards are compatible with last minor series of the previous major
-            Version bwcVersion = null;
-
-            for (int i = DeclaredVersionsHolder.DECLARED_VERSIONS.size() - 1; i >= 0; i--) {
-                final Version candidateVersion = DeclaredVersionsHolder.DECLARED_VERSIONS.get(i);
-                if (candidateVersion.major == major - 1 && candidateVersion.isRelease() && after(candidateVersion)) {
-                    if (bwcVersion != null && candidateVersion.minor < bwcVersion.minor) {
-                        break;
-                    }
-                    bwcVersion = candidateVersion;
-                }
-            }
-            return bwcVersion == null ? this : bwcVersion;
-        }
-
-        return Version.min(this, fromId((int) major * 1000000 + 0 * 10000 + 99));
+        return ES_V_5_0_2;
     }
 
     /**
@@ -306,14 +280,7 @@ public class Version implements Comparable<Version>, ToXContentFragment {
      * code that is used to read / write file formats like transaction logs, cluster state, and index metadata.
      */
     public Version minimumIndexCompatibilityVersion() {
-        final int bwcMajor;
-        if (major == 5) {
-            bwcMajor = 2; // we jumped from 2 to 5
-        } else {
-            bwcMajor = major - 1;
-        }
-        final int bwcMinor = 0;
-        return Version.min(this, fromId(bwcMajor * 1000000 + bwcMinor * 10000 + 99));
+        return ES_V_5_0_2;
     }
 
     /**
