@@ -849,7 +849,7 @@ then :ref:`gateway.recover_after_time <gateway.recover_after_time>` must not be
 set to ``0s``, otherwise the ``gateway.recover_after_nodes`` setting wouldn't
 have any effect.
 
-.. _sys_node_checks_disk_watermark_high:
+.. _node_checks_watermark_high:
 
 Routing Allocation Disk Watermark High
 ......................................
@@ -861,7 +861,7 @@ configured CrateDB data paths is verified against the threshold setting. If one
 or more verification fails the check is marked as not passed.
 
 
-.. _sys_node_checks_disk_watermark_low:
+.. _node_checks_watermark_low:
 
 Routing Allocation Disk Watermark Low
 .....................................
