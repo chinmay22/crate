@@ -26,7 +26,8 @@ import org.elasticsearch.transport.TransportRequest;
 
 public class DecommissionNodeRequest extends TransportRequest {
 
-    public DecommissionNodeRequest() {
-    }
+    public static final DecommissionNodeRequest INSTANCE = new DecommissionNodeRequest();
 
+    private DecommissionNodeRequest() {
+    }
 }

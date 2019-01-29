@@ -56,7 +56,7 @@ public final class DecommissionNodePlan implements Plan {
 
         dependencies.transportActionProvider().transportDecommissionNodeAction().execute(
             analyzedDecommissionNodeStatement.nodeId(),
-            new DecommissionNodeRequest(),
+            DecommissionNodeRequest.INSTANCE,
             listener
         );
 

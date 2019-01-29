@@ -25,8 +25,9 @@ package io.crate.integrationtests;
 import org.elasticsearch.test.ESIntegTestCase;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import static com.carrotsearch.randomizedtesting.RandomizedTest.$;
 import static org.hamcrest.Matchers.is;
 
 @ESIntegTestCase.ClusterScope(numDataNodes = 2, supportsDedicatedMasters = false, numClientNodes = 0)
@@ -41,10 +42,10 @@ public class DecommissionNodeStatementITest extends SQLTransportIntegrationTest 
         assertThat(response.rowCount(), is(2L));
 
         try {
-            execute("alter cluster decommission ?", new Object[] {localNodeId});
+            execute("alter cluster decommission ?", $(localNodeId));
             ensureYellow();
             execute("select id from sys.nodes");
-            assertBusy(() -> assertThat(response.rowCount(), is(1L)));
+            assertBusy(() -> assertThat(response.rowCount(), is(1L)), 60, TimeUnit.SECONDS);
 
         } finally {
             // satisfy min_master_nodes again; otherwise the teardown blocks
@@ -53,7 +54,7 @@ public class DecommissionNodeStatementITest extends SQLTransportIntegrationTest 
     }
 
     @Test
-    public void testDecommisssionRemoteNode() throws IOException {
+    public void testDecommisssionRemoteNode() throws Exception {
         String localNodeId = internalCluster().clusterService().localNode().getId();
 
         execute("select id from sys.nodes where id != ?", new Object[] {localNodeId});
@@ -62,10 +63,11 @@ public class DecommissionNodeStatementITest extends SQLTransportIntegrationTest 
         String remoteNodeId = (String) response.rows()[0][0];
 
         try {
-            execute("alter cluster decommission ?", new Object[] {remoteNodeId});
+            execute("alter cluster decommission ?", $(remoteNodeId));
             ensureYellow();
+
             execute("select id from sys.nodes");
-            assertThat(response.rowCount(), is(1L));
+            assertBusy(() -> assertThat(response.rowCount(), is(1L)), 60, TimeUnit.SECONDS);
 
         } finally {
             // satisfy min_master_nodes again; otherwise the teardown blocks

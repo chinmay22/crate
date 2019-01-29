@@ -54,7 +54,7 @@ public class TransportDecommissionNodeAction implements NodeAction<DecommissionN
         this.transports = transports;
 
         transportService.registerRequestHandler(ACTION_NAME,
-            DecommissionNodeRequest::new,
+            () -> DecommissionNodeRequest.INSTANCE,
             EXECUTOR,
             new NodeActionRequestHandler<>(this)
         );
